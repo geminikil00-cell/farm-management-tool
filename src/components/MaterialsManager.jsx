@@ -1,8 +1,11 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Materials Manager Component with Firebase
-const { useState, useEffect } = React;
-const { Plus, Edit2, Trash2 } = window.Icons;
 
-const MaterialsManager = ({ materials, setMaterials }) => {
+export const MaterialsManager = ({ materials, setMaterials }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({ 
@@ -30,10 +33,10 @@ const MaterialsManager = ({ materials, setMaterials }) => {
         try {
             if (editingId) {
                 // Update existing document in Firestore
-                await window.Firebase.updateDoc('materials', editingId, item);
+                await FirebaseHelpers.updateDoc('materials', editingId, item);
             } else {
                 // Add new document to Firestore
-                await window.Firebase.addDoc('materials', item);
+                await FirebaseHelpers.addDoc('materials', item);
             }
             closeModal();
         } catch (error) {
@@ -48,7 +51,7 @@ const MaterialsManager = ({ materials, setMaterials }) => {
         if(window.confirm('Delete this material?')) {
             try {
                 // Delete document from Firestore
-                await window.Firebase.deleteDoc('materials', id);
+                await FirebaseHelpers.deleteDoc('materials', id);
             } catch (error) {
                 console.error('Error deleting material:', error);
                 alert('Error deleting material. Please try again.');

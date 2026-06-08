@@ -1,7 +1,15 @@
-// Main App Component with Firebase Authentication
-const { useState, useEffect } = React;
-const { Sprout, LayoutGrid, Package, Flower2, Tractor, Droplets, Settings, PieChart, Menu } = window.Icons;
-
+import React, { useState, useEffect } from 'react';
+import { Sprout, LayoutGrid, Package, Flower2, Tractor, Droplets, Settings, PieChart, Menu } from 'lucide-react';
+import { FirebaseHelpers } from './firebase';
+import { Dashboard } from './components/Dashboard';
+import { StatisticalDataManager } from './components/StatisticalDataManager';
+import { MaterialsManager } from './components/MaterialsManager';
+import { NurseryManager } from './components/NurseryManager';
+import { PlantingManager } from './components/PlantingManager';
+import { HarvestingManager } from './components/HarvestingManager';
+import { SprayingManager } from './components/SprayingManager';
+import { IrrigationManager } from './components/IrrigationManager';
+import { LoginScreen } from './components/LoginScreen';
 const App = () => {
     // Auth State
     const [user, setUser] = useState(null);
@@ -26,7 +34,7 @@ const App = () => {
 
     // Listen to Auth State Changes
     useEffect(() => {
-        const unsubscribe = window.Firebase.onAuthStateChanged((currentUser) => {
+        const unsubscribe = FirebaseHelpers.onAuthStateChanged((currentUser) => {
             setUser(currentUser);
             setAuthLoading(false);
         });
@@ -55,42 +63,42 @@ const App = () => {
 
         // Subscribe to Materials
         unsubscribers.push(
-            window.Firebase.onSnapshot('materials', (data) => {
+            FirebaseHelpers.onSnapshot('materials', (data) => {
                 setMaterials(data);
             })
         );
 
         // Subscribe to Nursery Records
         unsubscribers.push(
-            window.Firebase.onSnapshot('nurseryRecords', (data) => {
+            FirebaseHelpers.onSnapshot('nurseryRecords', (data) => {
                 setNurseryRecords(data);
             })
         );
 
         // Subscribe to Planting Records
         unsubscribers.push(
-            window.Firebase.onSnapshot('plantingRecords', (data) => {
+            FirebaseHelpers.onSnapshot('plantingRecords', (data) => {
                 setPlantingRecords(data);
             })
         );
 
         // Subscribe to Harvest Records
         unsubscribers.push(
-            window.Firebase.onSnapshot('harvestRecords', (data) => {
+            FirebaseHelpers.onSnapshot('harvestRecords', (data) => {
                 setHarvestRecords(data);
             })
         );
 
         // Subscribe to Spraying Records
         unsubscribers.push(
-            window.Firebase.onSnapshot('sprayingRecords', (data) => {
+            FirebaseHelpers.onSnapshot('sprayingRecords', (data) => {
                 setSprayingRecords(data);
             })
         );
 
         // Subscribe to Irrigation Units
         unsubscribers.push(
-            window.Firebase.onSnapshot('irrigationUnits', (data) => {
+            FirebaseHelpers.onSnapshot('irrigationUnits', (data) => {
                 // Sort units by number extracted from name
                 const sorted = data.sort((a, b) => {
                     const numA = parseInt(a.name.match(/\d+/)?.[0] || '999');
@@ -103,14 +111,14 @@ const App = () => {
 
         // Subscribe to Irrigation Records
         unsubscribers.push(
-            window.Firebase.onSnapshot('irrigationRecords', (data) => {
+            FirebaseHelpers.onSnapshot('irrigationRecords', (data) => {
                 setIrrigationRecords(data);
             })
         );
 
         // Subscribe to Plot States
         unsubscribers.push(
-            window.Firebase.onSnapshot('plotStates', (data) => {
+            FirebaseHelpers.onSnapshot('plotStates', (data) => {
                 const statesObj = {};
                 data.forEach(item => {
                     statesObj[item.id] = item;
@@ -121,7 +129,7 @@ const App = () => {
 
         // Subscribe to Plots
         unsubscribers.push(
-            window.Firebase.onSnapshot('plots', (data) => {
+            FirebaseHelpers.onSnapshot('plots', (data) => {
                 if (data.length === 0) {
                     // Initialize default plots if none exist
                     const defaultPlots = [
@@ -148,7 +156,7 @@ const App = () => {
     // Handle Logout
     const handleLogout = async () => {
         try {
-            await window.Firebase.signOut();
+            await FirebaseHelpers.signOut();
         } catch (error) {
             console.error('Logout error:', error);
         }
@@ -167,7 +175,7 @@ const App = () => {
         };
         
         try {
-            await window.Firebase.addDoc('plots', newPlot);
+            await FirebaseHelpers.addDoc('plots', newPlot);
         } catch (error) {
             console.error('Error adding plot:', error);
         }
@@ -176,7 +184,7 @@ const App = () => {
     // Update Plot State in Firestore
     const updatePlotState = async (plotKey, newState) => {
         try {
-            await window.Firebase.setDoc('plotStates', plotKey, newState, { merge: true });
+            await FirebaseHelpers.setDoc('plotStates', plotKey, newState, { merge: true });
         } catch (error) {
             console.error('Error updating plot state:', error);
         }
@@ -244,7 +252,7 @@ const App = () => {
         
         // Update in Firestore
         try {
-            await window.Firebase.updateDoc('nurseryRecords', seedBatchId, {
+            await FirebaseHelpers.updateDoc('nurseryRecords', seedBatchId, {
                 costPerSeedling: totalCost,
                 lastCostCalc: plantingDate
             });
@@ -443,5 +451,6 @@ const App = () => {
 };
 
 // Render the app
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+
+
+export default App;

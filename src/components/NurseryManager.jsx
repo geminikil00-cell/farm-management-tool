@@ -1,8 +1,11 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Nursery Manager Component with Firebase
-const { useState, useMemo } = React;
-const { Plus, Edit2, Trash2, DollarSign } = window.Icons;
 
-const NurseryManager = ({ records, setRecords, materials, setMaterials, onCalculateCost }) => {
+export const NurseryManager = ({ records, setRecords, materials, setMaterials, onCalculateCost }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -44,13 +47,13 @@ const NurseryManager = ({ records, setRecords, materials, setMaterials, onCalcul
                         return;
                     }
                     if (mat) {
-                        await window.Firebase.updateDoc('materials', mat.id, {
+                        await FirebaseHelpers.updateDoc('materials', mat.id, {
                             quantity: (mat.quantity || 0) - diff
                         });
                     }
                 }
                 
-                await window.Firebase.updateDoc('nurseryRecords', editingId, {
+                await FirebaseHelpers.updateDoc('nurseryRecords', editingId, {
                     ...formData,
                     seedCount: count,
                     remainingCount: (oldRecord?.remainingCount || 0) + diff
@@ -65,14 +68,14 @@ const NurseryManager = ({ records, setRecords, materials, setMaterials, onCalcul
                         return;
                     }
                     // Update material stock in Firestore
-                    await window.Firebase.updateDoc('materials', mat.id, {
+                    await FirebaseHelpers.updateDoc('materials', mat.id, {
                         quantity: (mat.quantity || 0) - count
                     });
                 }
                 
                 const variety = formData.isCustomVariety ? formData.customVariety : selectedMaterial?.name || formData.variety;
                 
-                await window.Firebase.addDoc('nurseryRecords', {
+                await FirebaseHelpers.addDoc('nurseryRecords', {
                     date: formData.date,
                     crop: formData.crop,
                     variety,
@@ -99,14 +102,14 @@ const NurseryManager = ({ records, setRecords, materials, setMaterials, onCalcul
             if (record.materialId) {
                 const mat = materials.find(m => m.id === record.materialId);
                 if (mat) {
-                    await window.Firebase.updateDoc('materials', mat.id, {
+                    await FirebaseHelpers.updateDoc('materials', mat.id, {
                         quantity: (mat.quantity || 0) + (record.seedCount || 0)
                     });
                 }
             }
             
             // Delete from Firestore
-            await window.Firebase.deleteDoc('nurseryRecords', record.id);
+            await FirebaseHelpers.deleteDoc('nurseryRecords', record.id);
         } catch (error) {
             console.error('Error deleting nursery record:', error);
             alert('Error deleting record. Please try again.');

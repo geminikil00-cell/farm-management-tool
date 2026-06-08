@@ -1,8 +1,11 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Statistical Data Manager Component
-const { useState } = React;
-const { Plus, LayoutGrid, Warehouse, Sprout, BarChart3, X } = window.Icons;
 
-const StatisticalDataManager = ({ plots, addPlot, plantingRecords, harvestRecords, materials, getCycleBreakdown, nurseryRecords }) => {
+export const StatisticalDataManager = ({ plots, addPlot, plantingRecords, harvestRecords, materials, getCycleBreakdown, nurseryRecords }) => {
     const [selectedPlot, setSelectedPlot] = useState(null);
     const greenhouses = plots.filter(p => p.type === 'Greenhouse');
     const fields = plots.filter(p => p.type === 'Open Field');

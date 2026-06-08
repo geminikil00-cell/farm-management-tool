@@ -1,6 +1,11 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Chart Components
 
-const SVGBarChart = ({ data, height = 150 }) => {
+export const SVGBarChart = ({ data, height = 150 }) => {
     if (!data || data.length === 0) {
         return <div className="h-40 flex items-center justify-center text-slate-400 text-xs">No data available</div>;
     }
@@ -28,7 +33,7 @@ const SVGBarChart = ({ data, height = 150 }) => {
     );
 };
 
-const SVGDonutChart = ({ data, size = 120 }) => {
+export const SVGDonutChart = ({ data, size = 120 }) => {
     if (!data || data.length === 0) {
         return <div className="h-32 flex items-center justify-center text-slate-400 text-xs">No data</div>;
     }

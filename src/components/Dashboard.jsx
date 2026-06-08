@@ -1,7 +1,11 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Dashboard Component
-const { Sun, Wind, Tractor, Flower2, Warehouse, LayoutGrid } = window.Icons;
 
-const Dashboard = ({ stats }) => (
+export const Dashboard = ({ stats }) => (
     <div className="space-y-8 animate-fade-in">
         <header>
             <h2 className="text-3xl font-bold text-slate-900">Farm Overview</h2>

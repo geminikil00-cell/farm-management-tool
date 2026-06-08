@@ -1,9 +1,12 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Spraying Manager Component with Firebase
-const { useState, useMemo } = React;
-const { Plus, Edit2, Trash2, X } = window.Icons;
-const { SVGBarChart, SVGDonutChart } = window.Charts;
 
-const SprayingManager = ({ plots, materials, setMaterials, sprayingRecords, setSprayingRecords }) => {
+
+export const SprayingManager = ({ plots, materials, setMaterials, sprayingRecords, setSprayingRecords }) => {
     const [view, setView] = useState('entry');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
@@ -49,7 +52,7 @@ const SprayingManager = ({ plots, materials, setMaterials, sprayingRecords, setS
                     for (const item of old.items) {
                         const mat = materials.find(m => m.id === item.materialId);
                         if (mat) {
-                            await window.Firebase.updateDoc('materials', mat.id, {
+                            await FirebaseHelpers.updateDoc('materials', mat.id, {
                                 quantity: (mat.quantity || 0) + Number(item.quantity || 0)
                             });
                         }
@@ -67,7 +70,7 @@ const SprayingManager = ({ plots, materials, setMaterials, sprayingRecords, setS
                         setLoading(false);
                         return;
                     }
-                    await window.Firebase.updateDoc('materials', mat.id, {
+                    await FirebaseHelpers.updateDoc('materials', mat.id, {
                         quantity: (mat.quantity || 0) - qty
                     });
                 }
@@ -85,9 +88,9 @@ const SprayingManager = ({ plots, materials, setMaterials, sprayingRecords, setS
             };
 
             if (editingId) {
-                await window.Firebase.updateDoc('sprayingRecords', editingId, record);
+                await FirebaseHelpers.updateDoc('sprayingRecords', editingId, record);
             } else {
-                await window.Firebase.addDoc('sprayingRecords', record);
+                await FirebaseHelpers.addDoc('sprayingRecords', record);
             }
             
             closeModal();
@@ -137,14 +140,14 @@ const SprayingManager = ({ plots, materials, setMaterials, sprayingRecords, setS
                 for (const item of rec.items) {
                     const mat = materials.find(m => m.id === item.materialId);
                     if (mat) {
-                        await window.Firebase.updateDoc('materials', mat.id, {
+                        await FirebaseHelpers.updateDoc('materials', mat.id, {
                             quantity: (mat.quantity || 0) + Number(item.quantity || 0)
                         });
                     }
                 }
             }
             
-            await window.Firebase.deleteDoc('sprayingRecords', recId);
+            await FirebaseHelpers.deleteDoc('sprayingRecords', recId);
         } catch (error) {
             console.error('Error deleting spraying record:', error);
             alert('Error deleting record. Please try again.');

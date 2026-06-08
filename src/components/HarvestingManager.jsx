@@ -1,8 +1,11 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Harvesting Manager Component with Firebase
-const { useState, useMemo } = React;
-const { Edit2, Trash2, AlertTriangle } = window.Icons;
 
-const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecords, setHarvestRecords, plotStates, setPlotStates, plantingRecords, materials, setMaterials, onCalculateCycleCost }) => {
+export const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecords, setHarvestRecords, plotStates, setPlotStates, plantingRecords, materials, setMaterials, onCalculateCycleCost }) => {
     const [selectedPlot, setSelectedPlot] = useState(null);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({ date: new Date().toISOString().split('T')[0], selectedBatchId: '', crates: '', heads: '', weight: '', markFullyHarvested: false, packagingMaterialId: '', pricePerKg: '' });
@@ -76,7 +79,7 @@ const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecord
                         return;
                     }
                     // Deduct packaging from Firestore
-                    await window.Firebase.updateDoc('materials', packMat.id, {
+                    await FirebaseHelpers.updateDoc('materials', packMat.id, {
                         quantity: (packMat.quantity || 0) - needed
                     });
                     packagingCost = (packMat.unitPrice || 0) * needed;
@@ -84,7 +87,7 @@ const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecord
             }
 
             // Update planting record quantity in Firestore
-            await window.Firebase.updateDoc('plantingRecords', batch.id, {
+            await FirebaseHelpers.updateDoc('plantingRecords', batch.id, {
                 quantity: isFullyHarvested ? 0 : newQty
             });
 
@@ -92,7 +95,7 @@ const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecord
             if (isFullyHarvested) {
                 // Update plot state in Firestore
                 const currentState = getPlotState(selectedPlot.key);
-                await window.Firebase.setDoc('plotStates', selectedPlot.key, {
+                await FirebaseHelpers.setDoc('plotStates', selectedPlot.key, {
                     ...currentState,
                     status: 'fully_harvested'
                 });
@@ -122,7 +125,7 @@ const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecord
                 revenue: revenue
             };
             
-            await window.Firebase.addDoc('harvestRecords', newRecord);
+            await FirebaseHelpers.addDoc('harvestRecords', newRecord);
             
             setSelectedPlot(null);
             setWarningData(null);
@@ -151,14 +154,14 @@ const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecord
                 // Restore quantity to planting record
                 const plantingRec = plantingRecords.find(r => r.id === log.batchId);
                 if (plantingRec) {
-                    await window.Firebase.updateDoc('plantingRecords', plantingRec.id, {
+                    await FirebaseHelpers.updateDoc('plantingRecords', plantingRec.id, {
                         quantity: (plantingRec.quantity || 0) + totalHeads
                     });
                 }
                 
                 // Restore plot status if needed
                 if (state.status === 'fully_harvested') {
-                    await window.Firebase.setDoc('plotStates', log.plotKey, {
+                    await FirebaseHelpers.setDoc('plotStates', log.plotKey, {
                         ...state,
                         status: 'fully_planted'
                     });
@@ -166,7 +169,7 @@ const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecord
             }
             
             // Delete harvest record from Firestore
-            await window.Firebase.deleteDoc('harvestRecords', log.id);
+            await FirebaseHelpers.deleteDoc('harvestRecords', log.id);
         } catch (error) {
             console.error('Error deleting harvest record:', error);
             alert('Error deleting record. Please try again.');
@@ -184,7 +187,7 @@ const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecord
             if (isCurrentCycle) {
                 const newTotal = Number(editForm.crates) * Number(editForm.heads);
                 
-                await window.Firebase.updateDoc('harvestRecords', editLog.id, {
+                await FirebaseHelpers.updateDoc('harvestRecords', editLog.id, {
                     crates: Number(editForm.crates),
                     heads: Number(editForm.heads),
                     weight: Number(editForm.weight),
@@ -192,7 +195,7 @@ const HarvestingManager = ({ plots, plantingData, setPlantingData, harvestRecord
                 });
                 
                 if (editForm.markFullyHarvested !== (state.status === 'fully_harvested')) {
-                    await window.Firebase.setDoc('plotStates', editLog.plotKey, {
+                    await FirebaseHelpers.setDoc('plotStates', editLog.plotKey, {
                         ...state,
                         status: editForm.markFullyHarvested ? 'fully_harvested' : 'fully_planted'
                     });

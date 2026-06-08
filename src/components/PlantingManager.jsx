@@ -1,8 +1,11 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Planting Manager Component with Firebase
-const { useState, useMemo } = React;
-const { Edit2, Trash2, Lock } = window.Icons;
 
-const PlantingManager = ({ plots, plantingData, setPlantingData, plantingRecords, setPlantingRecords, nurseryRecords, setNurseryRecords, plotStates, setPlotStates }) => {
+export const PlantingManager = ({ plots, plantingData, setPlantingData, plantingRecords, setPlantingRecords, nurseryRecords, setNurseryRecords, plotStates, setPlotStates }) => {
     const [selectedPlot, setSelectedPlot] = useState(null);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({ date: new Date().toISOString().split('T')[0], selectedBatchId: '', quantity: '', markFullyPlanted: false });
@@ -44,7 +47,7 @@ const PlantingManager = ({ plots, plantingData, setPlantingData, plantingRecords
             if (cycle === 0) cycle = 1;
 
             // Update nursery record in Firestore
-            await window.Firebase.updateDoc('nurseryRecords', nurseryBatch.id, {
+            await FirebaseHelpers.updateDoc('nurseryRecords', nurseryBatch.id, {
                 remainingCount: (nurseryBatch.remainingCount || 0) - qty
             });
 
@@ -62,7 +65,7 @@ const PlantingManager = ({ plots, plantingData, setPlantingData, plantingRecords
                 plotKey: selectedPlot.key
             };
             
-            await window.Firebase.addDoc('plantingRecords', newRecord);
+            await FirebaseHelpers.addDoc('plantingRecords', newRecord);
 
             // Update plot state in Firestore
             const newState = {
@@ -70,7 +73,7 @@ const PlantingManager = ({ plots, plantingData, setPlantingData, plantingRecords
                 cycle,
                 year
             };
-            await window.Firebase.setDoc('plotStates', selectedPlot.key, newState);
+            await FirebaseHelpers.setDoc('plotStates', selectedPlot.key, newState);
 
             setSelectedPlot(null);
         } catch (error) {
@@ -100,13 +103,13 @@ const PlantingManager = ({ plots, plantingData, setPlantingData, plantingRecords
                 }
                 
                 if (nb) {
-                    await window.Firebase.updateDoc('nurseryRecords', nb.id, {
+                    await FirebaseHelpers.updateDoc('nurseryRecords', nb.id, {
                         remainingCount: (nb.remainingCount || 0) - diff
                     });
                 }
                 
                 if (editForm.markFullyPlanted !== (state.status === 'fully_planted')) {
-                    await window.Firebase.setDoc('plotStates', editLog.plotKey, {
+                    await FirebaseHelpers.setDoc('plotStates', editLog.plotKey, {
                         ...state,
                         status: editForm.markFullyPlanted ? 'fully_planted' : 'growing'
                     });
@@ -115,7 +118,7 @@ const PlantingManager = ({ plots, plantingData, setPlantingData, plantingRecords
                 alert("Old cycle record. Inventory not updated.");
             }
             
-            await window.Firebase.updateDoc('plantingRecords', editLog.id, {
+            await FirebaseHelpers.updateDoc('plantingRecords', editLog.id, {
                 date: editForm.date,
                 quantity: newQty
             });
@@ -138,7 +141,7 @@ const PlantingManager = ({ plots, plantingData, setPlantingData, plantingRecords
                 // Restore nursery stock
                 const nb = nurseryRecords.find(r => r.id === log.nurseryBatchId);
                 if (nb) {
-                    await window.Firebase.updateDoc('nurseryRecords', nb.id, {
+                    await FirebaseHelpers.updateDoc('nurseryRecords', nb.id, {
                         remainingCount: (nb.remainingCount || 0) + (log.quantity || 0)
                     });
                 }
@@ -146,14 +149,14 @@ const PlantingManager = ({ plots, plantingData, setPlantingData, plantingRecords
                 // Check if this is the last record for this plot
                 const remainingRecords = plantingRecords.filter(r => r.plotKey === log.plotKey && r.id !== log.id);
                 if (remainingRecords.length === 0) {
-                    await window.Firebase.setDoc('plotStates', log.plotKey, {
+                    await FirebaseHelpers.setDoc('plotStates', log.plotKey, {
                         ...state,
                         status: 'empty'
                     });
                 }
             }
             
-            await window.Firebase.deleteDoc('plantingRecords', log.id);
+            await FirebaseHelpers.deleteDoc('plantingRecords', log.id);
         } catch (error) {
             console.error('Error deleting planting record:', error);
             alert('Error deleting record. Please try again.');

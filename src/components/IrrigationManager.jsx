@@ -1,9 +1,12 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Irrigation Manager Component with Firebase
-const { useState, useMemo } = React;
-const { Droplets, Edit2, Trash2, X, Plus } = window.Icons;
-const { SVGBarChart, SVGDonutChart } = window.Charts;
 
-const IrrigationManager = ({ plots, materials, setMaterials, irrigationUnits, setIrrigationUnits, irrigationRecords, setIrrigationRecords }) => {
+
+export const IrrigationManager = ({ plots, materials, setMaterials, irrigationUnits, setIrrigationUnits, irrigationRecords, setIrrigationRecords }) => {
     const [view, setView] = useState('units');
     const [activeUnit, setActiveUnit] = useState(null);
     const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
@@ -34,7 +37,7 @@ const IrrigationManager = ({ plots, materials, setMaterials, irrigationUnits, se
         try {
             const unit = irrigationUnits.find(u => u.id === activeUnit);
             if (unit) {
-                await window.Firebase.setDoc('irrigationUnits', activeUnit, {
+                await FirebaseHelpers.setDoc('irrigationUnits', activeUnit, {
                     ...unit,
                     connectedPlots: selectedLocations
                 });
@@ -92,7 +95,7 @@ const IrrigationManager = ({ plots, materials, setMaterials, irrigationUnits, se
                 if (oldRec && oldRec.materialId) {
                     const oldMat = materials.find(m => m.id === oldRec.materialId);
                     if (oldMat) {
-                        await window.Firebase.updateDoc('materials', oldMat.id, {
+                        await FirebaseHelpers.updateDoc('materials', oldMat.id, {
                             quantity: (oldMat.quantity || 0) + Number(oldRec.quantity || 0)
                         });
                     }
@@ -106,7 +109,7 @@ const IrrigationManager = ({ plots, materials, setMaterials, irrigationUnits, se
                     setLoading(false);
                     return;
                 }
-                await window.Firebase.updateDoc('materials', mat.id, {
+                await FirebaseHelpers.updateDoc('materials', mat.id, {
                     quantity: (mat.quantity || 0) - qty
                 });
             }
@@ -123,9 +126,9 @@ const IrrigationManager = ({ plots, materials, setMaterials, irrigationUnits, se
             };
 
             if (editingId) {
-                await window.Firebase.updateDoc('irrigationRecords', editingId, record);
+                await FirebaseHelpers.updateDoc('irrigationRecords', editingId, record);
             } else {
-                await window.Firebase.addDoc('irrigationRecords', record);
+                await FirebaseHelpers.addDoc('irrigationRecords', record);
             }
             
             setIsEntryModalOpen(false);
@@ -149,13 +152,13 @@ const IrrigationManager = ({ plots, materials, setMaterials, irrigationUnits, se
             if (rec && rec.materialId) {
                 const mat = materials.find(m => m.id === rec.materialId);
                 if (mat) {
-                    await window.Firebase.updateDoc('materials', mat.id, {
+                    await FirebaseHelpers.updateDoc('materials', mat.id, {
                         quantity: (mat.quantity || 0) + Number(rec.quantity || 0)
                     });
                 }
             }
             
-            await window.Firebase.deleteDoc('irrigationRecords', recId);
+            await FirebaseHelpers.deleteDoc('irrigationRecords', recId);
         } catch (error) {
             console.error('Error deleting irrigation record:', error);
             alert('Error deleting record. Please try again.');
@@ -183,7 +186,7 @@ const IrrigationManager = ({ plots, materials, setMaterials, irrigationUnits, se
                 name: `Unit ${nextNumber}`,
                 connectedPlots: []
             };
-            await window.Firebase.addDoc('irrigationUnits', newUnit);
+            await FirebaseHelpers.addDoc('irrigationUnits', newUnit);
         } catch (error) {
             console.error('Error adding irrigation unit:', error);
             alert('Error adding unit. Please try again.');
@@ -198,7 +201,7 @@ const IrrigationManager = ({ plots, materials, setMaterials, irrigationUnits, se
         setLoading(true);
         try {
             // Delete the unit only (records remain)
-            await window.Firebase.deleteDoc('irrigationUnits', unitId);
+            await FirebaseHelpers.deleteDoc('irrigationUnits', unitId);
         } catch (error) {
             console.error('Error deleting irrigation unit:', error);
             alert('Error deleting unit. Please try again.');

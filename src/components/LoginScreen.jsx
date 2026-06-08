@@ -1,8 +1,12 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as Icons from './Icons';
+import { SVGBarChart, SVGDonutChart, SVGLineChart, Sparkline, ProgressBar, StatCard, MiniCard, AlertCard, HeatMapCell } from './Shared';
+import { FirebaseHelpers } from '../firebase';
+import { Sprout, Tractor, Sun, Wind, Warehouse, LayoutGrid, Flower2, Plus, Edit2, Trash2, BarChart3, Package, Menu, DollarSign, X, Lock, AlertTriangle, Droplets, Settings, PieChart } from 'lucide-react';
 // Login Screen Component
-const { useState } = React;
-const { Sprout, Lock } = window.Icons || {};
 
-const LoginScreen = ({ onLogin }) => {
+
+export const LoginScreen = ({ onLogin }) => {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -16,9 +20,9 @@ const LoginScreen = ({ onLogin }) => {
 
         try {
             if (isLogin) {
-                await window.Firebase.signInWithEmailAndPassword(email, password);
+                await FirebaseHelpers.signInWithEmailAndPassword(email, password);
             } else {
-                await window.Firebase.createUserWithEmailAndPassword(email, password);
+                await FirebaseHelpers.createUserWithEmailAndPassword(email, password);
             }
             // onLogin will be called by the auth state listener in App.js
         } catch (err) {
