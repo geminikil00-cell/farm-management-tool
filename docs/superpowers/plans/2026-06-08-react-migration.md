@@ -17,7 +17,7 @@
 - Create: `src/main.jsx`, `src/App.jsx`, `src/index.css`
 - Modify: `index.html` (Vite's root)
 
-- [ ] **Step 1: Create Vite project in a temp folder and move it to root**
+- [x] **Step 1: Create Vite project in a temp folder and move it to root**
 ```bash
 npx -y create-vite@5 temp-app --template react
 mv temp-app/* ./
@@ -25,7 +25,7 @@ mv temp-app/.[!.]* ./
 rm -rf temp-app
 ```
 
-- [ ] **Step 2: Install dependencies**
+- [x] **Step 2: Install dependencies**
 ```bash
 npm install
 npm install firebase
@@ -33,7 +33,7 @@ npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 
-- [ ] **Step 3: Configure Tailwind**
+- [x] **Step 3: Configure Tailwind**
 ```javascript
 // tailwind.config.js
 export default {
@@ -48,7 +48,7 @@ export default {
 }
 ```
 
-- [ ] **Step 4: Update `src/index.css`**
+- [x] **Step 4: Update `src/index.css`**
 Add Tailwind directives and the custom styles from `styles.css`.
 ```css
 @tailwind base;
@@ -65,7 +65,7 @@ Add Tailwind directives and the custom styles from `styles.css`.
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 ```
 
-- [ ] **Step 5: Setup Firebase**
+- [x] **Step 5: Setup Firebase**
 ```javascript
 // src/firebase.js
 import { initializeApp } from 'firebase/app';
@@ -106,10 +106,10 @@ export const FirebaseHelpers = {
 - Create: `src/components/Icons.jsx`
 - Create: `src/components/Shared.jsx`
 
-- [ ] **Step 1: Port Icons**
+- [x] **Step 1: Port Icons**
 Move all inline Icon components from `index.html` (e.g., `Sprout`, `Tractor`, etc.) into `src/components/Icons.jsx` and export them.
 
-- [ ] **Step 2: Port Shared UI Components**
+- [x] **Step 2: Port Shared UI Components**
 Move `SVGBarChart`, `SVGDonutChart`, `SVGLineChart`, `Sparkline`, `ProgressBar`, `StatCard`, `MiniCard`, `AlertCard`, `HeatMapCell` from `index.html` into `src/components/Shared.jsx`. Ensure React imports are correct.
 
 ---
@@ -127,7 +127,7 @@ Move `SVGBarChart`, `SVGDonutChart`, `SVGLineChart`, `Sparkline`, `ProgressBar`,
 - Create: `src/components/SprayingManager.jsx`
 - Create: `src/components/IrrigationManager.jsx`
 
-- [ ] **Step 1: Create components using contents from `index.html` and `js/components/*.js`**
+- [x] **Step 1: Create components using contents from `index.html` and `js/components/*.js`**
 Extract and convert these files into standard functional components, updating `window.Firebase` to use imported `FirebaseHelpers`. Ensure all React hooks (`useState`, `useEffect`, `useMemo`) are correctly imported.
 
 ---
@@ -139,23 +139,23 @@ Extract and convert these files into standard functional components, updating `w
 - Modify: `index.html` (Cleanup)
 - Delete: `js/` folder, old `styles.css`
 
-- [ ] **Step 1: Construct App Component**
+- [x] **Step 1: Construct App Component**
 Update `src/App.jsx` using the logic found in `js/App.js`. Ensure it imports the feature components and renders them properly based on state. Replace global references (`window.Icons`, `window.Firebase`) with ES modules.
 
-- [ ] **Step 2: Build Verification**
+- [x] **Step 2: Build Verification**
 ```bash
 npm run build
 ```
 Verify the build succeeds with no errors.
 
-- [ ] **Step 3: Cleanup redundant files**
+- [x] **Step 3: Cleanup redundant files**
 ```bash
 rm -rf js/
 rm styles.css
 rm -f old-index.html
 ```
 
-- [ ] **Step 4: Git Commit & Push**
+- [x] **Step 4: Git Commit & Push**
 ```bash
 git add .
 git commit -m "feat: migrate to production-ready Vite React architecture"
